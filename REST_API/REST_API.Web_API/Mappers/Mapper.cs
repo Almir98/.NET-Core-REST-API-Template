@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using REST_API.Data.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace REST_API.Web_API.Mappers
     {
         public Mapper()
         {
-
+            CreateMap<CityRequest, Database.City>().ReverseMap();
 
 
         }

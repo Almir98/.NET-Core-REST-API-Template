@@ -7,7 +7,7 @@ namespace REST_API.Interface
 {
     public interface IService<TModel,Tsearch>
     {
-        TModel Get(Tsearch search);
+        List<TModel> Get(Tsearch search);
         TModel GetById(int id);
     }
 }

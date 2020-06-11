@@ -7,11 +7,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using REST_API.Data.Requests;
+using REST_API.Interface;
+using REST_API.Web_API.Database;
+using REST_API.Web_API.Service;
 
 namespace REST_API.Web_API
 {
@@ -26,6 +31,9 @@ namespace REST_API.Web_API
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDbContext<RentaCarContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("Connectionstring")));
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -36,7 +44,13 @@ namespace REST_API.Web_API
             services.AddAutoMapper(typeof(Startup));                //Automapper configuration
             services.AddMvc();
 
+            
+            #region Dependency injection
+            
+            services.AddScoped<IService<CityRequest,object>,BaseService<CityRequest,object,Database.City>>();
 
+
+            #endregion
 
         }
 
