@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using REST_API.Data.Requests;
 using REST_API.Interface;
 using REST_API.Web_API.Database;
+using REST_API.Web_API.Interface;
+using REST_API.Web_API.Security;
 using REST_API.Web_API.Service;
 
 namespace REST_API.Web_API
@@ -38,20 +41,50 @@ namespace REST_API.Web_API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RentACar API", Version = "v1" });
+
+                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization header using the Bearer scheme."
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "basic"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
+
+            services.AddAuthentication("BasicAuthentication")
+               .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
 
             services.AddAutoMapper(typeof(Startup));                //Automapper configuration
             services.AddMvc();
 
-            
+
             #region Dependency injection
-            
+
+            services.AddScoped<ICustomerService, CustomerService>();
+
+
             services.AddScoped<IService<CityRequest,object>,BaseService<CityRequest,object,Database.City>>();
 
 
             #endregion
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

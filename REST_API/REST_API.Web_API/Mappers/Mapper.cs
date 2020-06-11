@@ -12,6 +12,8 @@ namespace REST_API.Web_API.Mappers
         public Mapper()
         {
             CreateMap<CityRequest, Database.City>().ReverseMap();
+            CreateMap<CustomerRequest, Database.Customer>().ReverseMap();
+            CreateMap<CustomerRequest, CustomerUpsert>().ReverseMap();
 
 
         }
