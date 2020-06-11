@@ -20,6 +20,7 @@ using REST_API.Web_API.Database;
 using REST_API.Web_API.Interface;
 using REST_API.Web_API.Security;
 using REST_API.Web_API.Service;
+using REST_API.WebAPI.Filters;
 
 namespace REST_API.Web_API
 {
@@ -36,6 +37,8 @@ namespace REST_API.Web_API
         {
 
             services.AddDbContext<RentaCarContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("Connectionstring")));
+
+            services.AddMvc(x => x.Filters.Add<ErrorFilter>());         // Filter for errors
 
             services.AddControllers();
 
