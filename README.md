@@ -3,7 +3,7 @@ This is a REST API C# ASP.NET Core implementation project consisting of the foll
 
 1. Web application -> API project,
 
-2 Entity Framework Core to connect to the database ( Code first approach ), 
+2. Entity Framework Core to connect to the database ( Code first approach ), 
 
 3. .Net Standard Class Library for View Models,
 
@@ -15,7 +15,7 @@ This is a REST API C# ASP.NET Core implementation project consisting of the foll
 
 7. Basic authentication for simple authentication scheme built into the HTTP protocol,
 
-8. Filter custom class to rewrite the response message ( Action and Exception ),
+8. Filter custom class to rewrite the response message ( Action and Exception )
 
 
 
