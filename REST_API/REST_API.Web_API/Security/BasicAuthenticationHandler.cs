@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using REST_API.Data;
 using REST_API.Data.Requests;
-using REST_API.Web_API.Database;
 using REST_API.Web_API.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace REST_API.Web_API.Security
+namespace RentACar.WebAPI.Security
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -35,7 +34,8 @@ namespace REST_API.Web_API.Security
             if (!Request.Headers.ContainsKey("Authorization"))
                 return AuthenticateResult.Fail("Missing Authorization Header");
 
-            Customer user = null;
+            REST_API.Web_API.Database.Customer user = null;
+
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
@@ -63,10 +63,7 @@ namespace REST_API.Web_API.Security
                 new Claim(ClaimTypes.Name, user.FirstName),
             };
 
-            foreach (var role in user.CustomerRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role.Role.RoleName));
-            }
+            claims.Add(new Claim(ClaimTypes.Role, user.CustomerType.Type));
 
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

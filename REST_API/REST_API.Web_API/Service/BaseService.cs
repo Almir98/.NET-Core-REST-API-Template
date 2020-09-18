@@ -28,5 +28,18 @@ namespace REST_API.Web_API.Service
         {
             return _mapper.Map<TModel>(_context.Set<TDatabase>().Find(id));
         }
+        public void Delete(int id)
+        {
+            var entity = _context.Set<TDatabase>().Find(id);
+            if (entity == null)
+            {
+                throw new ArgumentException();
+            }
+            else
+            {
+                _context.Set<TDatabase>().Remove(entity);
+                _context.SaveChanges();
+            }
+        }
     }
 }

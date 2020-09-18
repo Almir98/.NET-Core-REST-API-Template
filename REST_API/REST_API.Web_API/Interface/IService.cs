@@ -9,5 +9,6 @@ namespace REST_API.Interface
     {
         List<TModel> Get(Tsearch search);
         TModel GetById(int id);
+        void Delete(int id);
     }
 }

@@ -14,11 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using RentACar.WebAPI.Security;
 using REST_API.Data.Requests;
 using REST_API.Interface;
 using REST_API.Web_API.Database;
 using REST_API.Web_API.Interface;
-using REST_API.Web_API.Security;
 using REST_API.Web_API.Service;
 using REST_API.WebAPI.Filters;
 
@@ -84,7 +84,7 @@ namespace REST_API.Web_API
             services.AddScoped<ICustomerService, CustomerService>();
 
 
-            services.AddScoped<IService<CityRequest,object>,BaseService<CityRequest,object,Database.City>>();
+            services.AddScoped<IService<Data.City,object>,BaseService<Data.City,object,Database.City>>();
 
 
             #endregion

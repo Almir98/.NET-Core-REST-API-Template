@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace REST_API.Web_API.Database
+namespace REST_API.Data
 {
     public partial class Customer
     {
-        public Customer()
-        {
-            Booking = new HashSet<Booking>();
-            Comment = new HashSet<Comment>();
-            Rating = new HashSet<Rating>();
-        }
-
         public int CustomerId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace REST_API.Web_API.Database
+namespace REST_API.Data
 {
     public partial class Booking
     {

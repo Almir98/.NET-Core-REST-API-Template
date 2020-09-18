@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Helper;
 using Microsoft.EntityFrameworkCore;
 using REST_API.Data.Requests;
 using REST_API.Interface;
@@ -30,7 +31,7 @@ namespace REST_API.Web_API.Service
 
             if (customer != null)
             {
-                var newHash = GenerateHash(customer.PasswordSalt, request.Password);
+                var newHash = HashGenerator.GenerateHash(customer.PasswordSalt, request.Password);
 
                 if (customer.PasswordHash == newHash)
                 {
@@ -40,7 +41,7 @@ namespace REST_API.Web_API.Service
             return null;
         }
 
-        public List<CustomerRequest> Get(CustomerSearchRequest request)
+        public List<Data.Customer> Get(CustomerSearchRequest request)
         {
             var query = _context.Customer.Include(x => x.City).AsQueryable();
 
@@ -55,35 +56,15 @@ namespace REST_API.Web_API.Service
             }
             query = query.OrderBy(x => x.FirstName);
 
-            return _mapper.Map<List<CustomerRequest>>(query.ToList());
+            return _mapper.Map<List<Data.Customer>>(query.ToList());
         }
 
-        private static string GenerateSalt()
+        public Data.Customer GetById(int id)
         {
-            var buffer = new byte[16];
-            (new RNGCryptoServiceProvider()).GetBytes(buffer);
-            return Convert.ToBase64String(buffer);
-        }
-        private static string GenerateHash(string salt, string password)
-        {
-            byte[] src = Convert.FromBase64String(salt);
-            byte[] bytes = Encoding.Unicode.GetBytes(password);
-            byte[] dst = new byte[src.Length + bytes.Length];
-
-            System.Buffer.BlockCopy(src, 0, dst, 0, src.Length);
-            System.Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
-
-            HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
-            byte[] inArray = algorithm.ComputeHash(dst);
-            return Convert.ToBase64String(inArray);
+            return _mapper.Map<Data.Customer>(_context.Customer.Find(id));
         }
 
-        public CustomerRequest GetById(int id)
-        {
-            return _mapper.Map<CustomerRequest>(_context.Customer.Find(id));
-        }
-
-        public CustomerRequest Insert(CustomerUpsert customer)
+        public Data.Customer Insert(CustomerUpsert customer)
         {
             var entity = _mapper.Map<Customer>(customer);
 
@@ -92,28 +73,25 @@ namespace REST_API.Web_API.Service
                 throw new Exception("Password and password confirm don't match !");
             }
 
-            entity.PasswordSalt = GenerateSalt();
-            entity.PasswordHash = GenerateHash(entity.PasswordSalt, customer.Password);
+            entity.PasswordSalt = HashGenerator.GenerateSalt();
+            entity.PasswordHash = HashGenerator.GenerateHash(entity.PasswordSalt, customer.Password);
 
             _context.Add(entity);
             _context.SaveChanges();
-
-            foreach (var item in customer.Role)
-            {
-                CustomerRoles customerRoles = new CustomerRoles();
-
-                customerRoles.CustomerId = entity.CustomerId;
-                customerRoles.RoleId = item;
-                _context.CustomerRoles.Add(customerRoles);
-            }
-            _context.SaveChanges();
-
-            return _mapper.Map<CustomerRequest>(entity);
+            return _mapper.Map<Data.Customer>(entity);
         }
 
-        public CustomerRequest Update(int id, CustomerUpsert customer)
+        public Data.Customer Update(int id, CustomerUpsert customer)
         {
-            throw new NotImplementedException();
+            var entity = _context.Customer.Find(id);
+
+            _context.Customer.Attach(entity);
+            _context.Customer.Update(entity);
+
+            _mapper.Map(customer, entity);
+            _context.SaveChanges();
+
+            return _mapper.Map<Data.Customer>(entity);
         }
     }
 }

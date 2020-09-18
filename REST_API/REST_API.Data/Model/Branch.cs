@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace REST_API.Web_API.Database
+namespace REST_API.Data
 {
     public partial class Branch
     {
-        public Branch()
-        {
-            Vehicle = new HashSet<Vehicle>();
-        }
-
         public int BranchId { get; set; }
         public string BranchName { get; set; }
         public string PhoneNumber { get; set; }

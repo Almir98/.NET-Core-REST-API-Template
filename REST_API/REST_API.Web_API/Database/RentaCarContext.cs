@@ -20,13 +20,10 @@ namespace REST_API.Web_API.Database
         public virtual DbSet<City> City { get; set; }
         public virtual DbSet<Comment> Comment { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
-        public virtual DbSet<CustomerRoles> CustomerRoles { get; set; }
+        public virtual DbSet<CustomerType> CustomerType { get; set; }
         public virtual DbSet<FuelType> FuelType { get; set; }
         public virtual DbSet<Manufacturer> Manufacturer { get; set; }
-        public virtual DbSet<Payment> Payment { get; set; }
-        public virtual DbSet<PaymentType> PaymentType { get; set; }
         public virtual DbSet<Rating> Rating { get; set; }
-        public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Vehicle> Vehicle { get; set; }
         public virtual DbSet<VehicleModel> VehicleModel { get; set; }
         public virtual DbSet<VehicleType> VehicleType { get; set; }
@@ -35,8 +32,7 @@ namespace REST_API.Web_API.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.;Database=RentaCar;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.;Database=RentCar;Integrated Security=True;Trusted_Connection=True;");
             }
         }
 
@@ -44,11 +40,13 @@ namespace REST_API.Web_API.Database
         {
             modelBuilder.Entity<Booking>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId);
+
+                entity.HasIndex(e => e.VehicleId);
+
                 entity.Property(e => e.BookingId).HasColumnName("BookingID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-
-                entity.Property(e => e.Description).HasMaxLength(200);
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
@@ -59,18 +57,18 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Booking)
                     .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Booking_CustomerID");
 
                 entity.HasOne(d => d.Vehicle)
                     .WithMany(p => p.Booking)
                     .HasForeignKey(d => d.VehicleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Booking_VehicleID");
             });
 
             modelBuilder.Entity<Branch>(entity =>
             {
+                entity.HasIndex(e => e.CityId);
+
                 entity.Property(e => e.BranchId).HasColumnName("BranchID");
 
                 entity.Property(e => e.Adress)
@@ -83,13 +81,13 @@ namespace REST_API.Web_API.Database
 
                 entity.Property(e => e.CityId).HasColumnName("CityID");
 
-                entity.Property(e => e.CloseTime).HasColumnType("datetime");
+                entity.Property(e => e.CloseTime).HasMaxLength(10);
 
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.OpenTime).HasColumnType("datetime");
+                entity.Property(e => e.OpenTime).HasMaxLength(10);
 
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
@@ -98,7 +96,6 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.City)
                     .WithMany(p => p.Branch)
                     .HasForeignKey(d => d.CityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Branch_CityID");
             });
 
@@ -117,6 +114,10 @@ namespace REST_API.Web_API.Database
 
             modelBuilder.Entity<Comment>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId);
+
+                entity.HasIndex(e => e.VehicleId);
+
                 entity.Property(e => e.CommentId).HasColumnName("CommentID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
@@ -132,21 +133,25 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Comment)
                     .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Comment_CustomerID");
 
                 entity.HasOne(d => d.Vehicle)
                     .WithMany(p => p.Comment)
                     .HasForeignKey(d => d.VehicleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Comment_VehicleID");
             });
 
             modelBuilder.Entity<Customer>(entity =>
             {
+                entity.HasIndex(e => e.CityId);
+
+                entity.HasIndex(e => e.CustomerTypeId);
+
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
                 entity.Property(e => e.CityId).HasColumnName("CityID");
+
+                entity.Property(e => e.CustomerTypeId).HasColumnName("CustomerTypeID");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -162,11 +167,11 @@ namespace REST_API.Web_API.Database
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.PasswordSalt)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
@@ -179,29 +184,19 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.City)
                     .WithMany(p => p.Customer)
                     .HasForeignKey(d => d.CityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Customer_CityID");
+
+                entity.HasOne(d => d.CustomerType)
+                    .WithMany(p => p.Customer)
+                    .HasForeignKey(d => d.CustomerTypeId)
+                    .HasConstraintName("FK_Customer_CustomerTypeID");
             });
 
-            modelBuilder.Entity<CustomerRoles>(entity =>
+            modelBuilder.Entity<CustomerType>(entity =>
             {
-                entity.Property(e => e.CustomerRolesId).HasColumnName("CustomerRolesID");
+                entity.Property(e => e.CustomerTypeId).HasColumnName("CustomerTypeID");
 
-                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-
-                entity.Property(e => e.RoleId).HasColumnName("RoleID");
-
-                entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.CustomerRoles)
-                    .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CustomerRoles_CustomerID");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.CustomerRoles)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CustomerRoles_RoleID");
+                entity.Property(e => e.Type).HasMaxLength(50);
             });
 
             modelBuilder.Entity<FuelType>(entity =>
@@ -222,80 +217,41 @@ namespace REST_API.Web_API.Database
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Payment>(entity =>
-            {
-                entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
-
-                entity.Property(e => e.BookingId).HasColumnName("BookingID");
-
-                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-
-                entity.Property(e => e.PaymentDate).HasColumnType("datetime");
-
-                entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentTypeID");
-
-                entity.Property(e => e.Price).HasColumnType("decimal(5, 2)");
-
-                entity.HasOne(d => d.Booking)
-                    .WithMany(p => p.Payment)
-                    .HasForeignKey(d => d.BookingId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_BookingID");
-
-                entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.Payment)
-                    .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_CustomerID");
-
-                entity.HasOne(d => d.PaymentType)
-                    .WithMany(p => p.Payment)
-                    .HasForeignKey(d => d.PaymentTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payment_PaymentTypeID");
-            });
-
-            modelBuilder.Entity<PaymentType>(entity =>
-            {
-                entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentTypeID");
-
-                entity.Property(e => e.TypeName).HasMaxLength(50);
-            });
-
             modelBuilder.Entity<Rating>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId);
+
+                entity.HasIndex(e => e.VehicleId);
+
                 entity.Property(e => e.RatingId).HasColumnName("RatingID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.RatingDate).HasColumnType("datetime");
 
                 entity.Property(e => e.VehicleId).HasColumnName("VehicleID");
 
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Rating)
                     .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Rating_CustomerID");
 
                 entity.HasOne(d => d.Vehicle)
                     .WithMany(p => p.Rating)
                     .HasForeignKey(d => d.VehicleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Rating_VehicleID");
-            });
-
-            modelBuilder.Entity<Role>(entity =>
-            {
-                entity.Property(e => e.RoleId)
-                    .HasColumnName("RoleID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.RoleName)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Vehicle>(entity =>
             {
+                entity.HasIndex(e => e.BranchId);
+
+                entity.HasIndex(e => e.FuelTypeId);
+
+                entity.HasIndex(e => e.VehicleModelId);
+
+                entity.HasIndex(e => e.VehicleTypeId);
+
                 entity.Property(e => e.VehicleId).HasColumnName("VehicleID");
 
                 entity.Property(e => e.BranchId).HasColumnName("BranchID");
@@ -325,25 +281,21 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.Branch)
                     .WithMany(p => p.Vehicle)
                     .HasForeignKey(d => d.BranchId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vehicle_BranchID");
 
                 entity.HasOne(d => d.FuelType)
                     .WithMany(p => p.Vehicle)
                     .HasForeignKey(d => d.FuelTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vehicle_FuelTypeID");
 
                 entity.HasOne(d => d.VehicleModel)
                     .WithMany(p => p.Vehicle)
                     .HasForeignKey(d => d.VehicleModelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vehicle_ModelID");
 
                 entity.HasOne(d => d.VehicleType)
                     .WithMany(p => p.Vehicle)
                     .HasForeignKey(d => d.VehicleTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vehicle_VehicleTypeID");
             });
 
@@ -352,9 +304,9 @@ namespace REST_API.Web_API.Database
                 entity.HasKey(e => e.ModelId)
                     .HasName("PK_ModelID");
 
-                entity.Property(e => e.ModelId).HasColumnName("ModelID");
+                entity.HasIndex(e => e.ManufacturerId);
 
-                entity.Property(e => e.Description).HasMaxLength(200);
+                entity.Property(e => e.ModelId).HasColumnName("ModelID");
 
                 entity.Property(e => e.ManufacturerId).HasColumnName("ManufacturerID");
 
@@ -365,7 +317,6 @@ namespace REST_API.Web_API.Database
                 entity.HasOne(d => d.Manufacturer)
                     .WithMany(p => p.VehicleModel)
                     .HasForeignKey(d => d.ManufacturerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Model_ManufacturerID");
             });
 

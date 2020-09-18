@@ -9,13 +9,13 @@ namespace REST_API.Web_API.Interface
 {
     public interface ICustomerService
     {
-        List<CustomerRequest> Get(CustomerSearchRequest request);
+        List<Data.Customer> Get(CustomerSearchRequest request);
 
-        CustomerRequest GetById(int id);
+        Data.Customer GetById(int id);
 
-        CustomerRequest Insert(CustomerUpsert customer);
+        Data.Customer Insert(CustomerUpsert customer);
 
-        CustomerRequest Update(int id, CustomerUpsert customer);
+        Data.Customer Update(int id, CustomerUpsert customer);
 
         Customer Authenticate(CustomerLoginRequest request);
     }

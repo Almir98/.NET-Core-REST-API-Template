@@ -23,25 +23,25 @@ namespace REST_API.Web_API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<CustomerRequest>> Get([FromQuery]CustomerSearchRequest request)
+        public ActionResult<List<Data.Customer>> Get([FromQuery]CustomerSearchRequest request)
         {
             return _service.Get(request);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CustomerRequest> GetById(int id)
+        public ActionResult<Data.Customer> GetById(int id)
         {
             return _service.GetById(id);
         }
 
         [HttpPost]
-        public ActionResult<CustomerRequest> Insert(CustomerUpsert request)
+        public ActionResult<Data.Customer> Insert(CustomerUpsert request)
         {
             return _service.Insert(request);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<CustomerRequest> Update(int id,CustomerUpsert request)
+        public ActionResult<Data.Customer> Update(int id,CustomerUpsert request)
         {
             return _service.Update(id, request);
         }
