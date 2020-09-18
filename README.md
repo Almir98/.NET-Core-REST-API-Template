@@ -1,9 +1,8 @@
-
-This is a REST API C# ASP.NET Core implementation project consisting of the following components :
+Basic REST API .NET Core implementation consisting of the following components :
 
 1. Web application -> API project,
 
-2. Entity Framework Core to connect to the database ( Code first approach ), 
+2. Entity Framework Core to connect to the database 
 
 3. .Net Standard Class Library for View Models,
 
