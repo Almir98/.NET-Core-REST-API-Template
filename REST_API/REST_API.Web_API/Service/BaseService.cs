@@ -19,16 +19,16 @@ namespace REST_API.Web_API.Service
             _mapper = mapper;
         }
 
-        public List<TModel> Get(Tsearch search)
+        public virtual List<TModel> Get(Tsearch search)
         {
             return _mapper.Map<List<TModel>>(_context.Set<TDatabase>().ToList());
         }
 
-        public TModel GetById(int id)
+        public virtual TModel GetById(int id)
         {
             return _mapper.Map<TModel>(_context.Set<TDatabase>().Find(id));
         }
-        public void Delete(int id)
+        public virtual void Delete(int id)
         {
             var entity = _context.Set<TDatabase>().Find(id);
             if (entity == null)

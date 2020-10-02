@@ -82,10 +82,11 @@ namespace REST_API.Web_API
             #region Dependency injection
 
             services.AddScoped<ICustomerService, CustomerService>();
-
-
             services.AddScoped<IService<Data.City,object>,BaseService<Data.City,object,Database.City>>();
 
+            services.AddScoped<ICRUDService<Data.Booking, BookingSearchRequest, BookingUpsert, BookingUpsert>, BookingService>();
+            services.AddScoped<ICRUDService<Data.Branch, BranchSearchRequest, BranchUpsert, BranchUpsert>, BranchService>();
+            services.AddScoped<ICRUDService<Data.Comment, CommentSearchRequest, CommentUpsert, CommentUpsert>, CommentService>();
 
             #endregion
         }

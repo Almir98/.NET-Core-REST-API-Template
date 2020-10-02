@@ -16,6 +16,16 @@ namespace REST_API.Web_API.Mappers
             CreateMap<CustomerRequest, CustomerUpsert>().ReverseMap();
 
 
+            CreateMap<Data.Booking, Database.Booking>().ReverseMap();
+            CreateMap<BookingSearchRequest, Database.Booking>().ReverseMap();
+
+            CreateMap<Data.Branch, Database.Branch>().ReverseMap();
+            CreateMap<BranchSearchRequest, Database.Branch>().ReverseMap();
+
+            CreateMap<Data.Comment, Database.Comment>().ReverseMap();
+            CreateMap<CommentSearchRequest, Database.Comment>().ReverseMap();
+
+
         }
 
 
